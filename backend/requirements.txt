@@ -1,0 +1,11 @@
+Django>=4.2,<5.0
+djangorestframework>=3.14
+django-filter>=23.2
+django-cors-headers>=4.2
+djangorestframework-simplejwt>=5.3
+google-auth>=2.22
+requests>=2.31
+cryptography>=41.0
+psycopg2-binary>=2.9.0
+gunicorn>=20.1.0
+beautifulsoup4>=4.11.0
