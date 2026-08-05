@@ -5,7 +5,10 @@ DEBUG = False
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = [host for host in os.environ.get('ALLOWED_HOSTS', '').split(',') if host]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['*', '.vercel.app', '.onrender.com', 'localhost', '127.0.0.1']
+
 
 # PostgreSQL Production Database Configuration
 DB_NAME = os.environ.get("POSTGRES_DB", "apexyouth")
