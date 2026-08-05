@@ -8,6 +8,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 ALLOWED_HOSTS = [host for host in os.environ.get('ALLOWED_HOSTS', '').split(',') if host]
 if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['*', '.vercel.app', '.onrender.com', 'localhost', '127.0.0.1']
+else:
+    if '.vercel.app' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append('.vercel.app')
+
 
 
 # PostgreSQL Production Database Configuration
