@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
+import { getAuthenticatedUser } from "@/lib/auth-helper";
 
 export async function GET(request) {
   try {
-    const djangoApiUrl = process.env.DJANGO_API_URL || "http://127.0.0.1:8000";
-    const cookieHeader = request.headers.get("cookie") || "";
-    
-    const djangoRes = await fetch(`${djangoApiUrl}/api/auth/profile/`, {
-      method: "GET",
-      headers: {
-        "Cookie": cookieHeader,
-      },
-    });
+    const user = await getAuthenticatedUser(request);
 
-    if (djangoRes.status === 401) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const data = await djangoRes.json();
-    return NextResponse.json(data, { status: djangoRes.status });
+    return NextResponse.json({
+      email: user.email,
+      first_name: user.firstName,
+      last_name: user.lastName,
+      avatar_url: user.avatarUrl,
+      is_staff: user.isStaff,
+      is_superuser: user.isSuperuser,
+    });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

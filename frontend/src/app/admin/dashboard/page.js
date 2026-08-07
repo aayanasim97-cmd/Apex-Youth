@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
     const validateAccess = async () => {
       if (!authLoading && !user) {
         try {
-          const res = await apiFetch("/api/auth/profile/");
+          const res = await apiFetch("/api/auth/profile");
           if (res.ok) {
             const data = await res.json();
             if (data.is_staff || data.is_superuser) {

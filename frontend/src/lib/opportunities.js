@@ -12,17 +12,14 @@ export async function getOpportunities(filters = {}) {
   if (filters.search) query.append("search", filters.search);
   if (filters.cursor) query.append("cursor", filters.cursor);
 
-  console.log(`[API Client] getOpportunities Request URL: /api/opportunities/?${query.toString()}`);
-  const res = await apiFetch(`/api/opportunities/?${query.toString()}`);
+  console.log(`[API Client] getOpportunities Request URL: /api/opportunities?${query.toString()}`);
+  const res = await apiFetch(`/api/opportunities?${query.toString()}`);
   if (!res.ok) {
     throw new Error("Failed to fetch opportunities");
   }
   
   const data = await res.json();
   
-  // Custom cursor parser for CursorPagination.
-  // Django CursorPagination returns urls like "http://...?cursor=cD0yMDI2LTA3..."
-  // We extract the cursor token to pass back on subsequent pages.
   let next_cursor = null;
   if (data.next) {
     const nextUrl = new URL(data.next);
@@ -36,7 +33,7 @@ export async function getOpportunities(filters = {}) {
 }
 
 export async function getOpportunityById(id) {
-  const res = await apiFetch(`/api/opportunities/${id}/`);
+  const res = await apiFetch(`/api/opportunities/${id}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch opportunity ${id}`);
   }
@@ -44,7 +41,7 @@ export async function getOpportunityById(id) {
 }
 
 export async function getCategories() {
-  const res = await apiFetch("/api/categories/");
+  const res = await apiFetch("/api/categories");
   if (!res.ok) {
     throw new Error("Failed to fetch categories");
   }
@@ -52,7 +49,7 @@ export async function getCategories() {
 }
 
 export async function getCountries() {
-  const res = await apiFetch("/api/countries/");
+  const res = await apiFetch("/api/countries");
   if (!res.ok) {
     throw new Error("Failed to fetch countries");
   }

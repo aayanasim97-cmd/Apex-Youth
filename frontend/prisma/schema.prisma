@@ -1,0 +1,121 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Country {
+  id                       Int                               @id @default(autoincrement())
+  name                     String                            @unique
+  isoCode                  String                            @unique @map("iso_code")
+  
+  eligibleOpportunities    OpportunityEligibleHomeCountry[]
+  destinationOpportunities Opportunity[]                     @relation("DestinationCountry")
+
+  @@index([name])
+  @@index([isoCode])
+  @@map("opportunities_country")
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  slug          String        @unique
+  opportunities Opportunity[]
+
+  @@map("opportunities_category")
+}
+
+model Opportunity {
+  id                     Int                              @id @default(autoincrement())
+  title                  String
+  description            String
+  sourceUrl              String                           @unique @map("source_url")
+  applicationUrl         String?                          @map("application_url")
+  categoryId             Int                              @map("category_id")
+  category               Category                         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  
+  minAge                 Int?                             @map("min_age")
+  maxAge                 Int?                             @map("max_age")
+  
+  eligibleHomeCountries  OpportunityEligibleHomeCountry[]
+  isWorldwide            Boolean                          @default(false) @map("is_worldwide")
+  
+  destinationCountryId   Int?                             @map("destination_country_id")
+  destinationCountry     Country?                         @relation("DestinationCountry", fields: [destinationCountryId], references: [id], onDelete: SetNull)
+  
+  isOnline               Boolean                          @default(false) @map("is_online")
+  isOnsite               Boolean                          @default(false) @map("is_onsite")
+  
+  deadline               DateTime
+  startDate              DateTime?                        @map("start_date")
+  isActive               Boolean                          @default(true) @map("is_active")
+  
+  createdAt              DateTime                         @default(now()) @map("created_at")
+  updatedAt              DateTime                         @updatedAt @map("updated_at")
+
+  savedByUsers           SavedOpportunity[]
+  ingestionLogs          IngestionLog[]
+
+  @@index([title])
+  @@index([deadline, isActive])
+  @@index([minAge, maxAge])
+  @@index([isWorldwide, isOnline])
+  @@index([createdAt])
+  @@map("opportunities_opportunity")
+}
+
+model OpportunityEligibleHomeCountry {
+  id            Int         @id @default(autoincrement())
+  opportunityId Int         @map("opportunity_id")
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  countryId     Int         @map("country_id")
+  country       Country     @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@unique([opportunityId, countryId])
+  @@map("opportunities_opportunity_eligible_home_countries")
+}
+
+model User {
+  id                 Int                @id @default(autoincrement())
+  email              String             @unique
+  firstName          String?            @map("first_name")
+  lastName           String?            @map("last_name")
+  avatarUrl          String?            @map("avatar_url")
+  isStaff            Boolean            @default(false) @map("is_staff")
+  isSuperuser        Boolean            @default(false) @map("is_superuser")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  
+  savedOpportunities SavedOpportunity[]
+
+  @@map("accounts_customuser")
+}
+
+model SavedOpportunity {
+  id            Int         @id @default(autoincrement())
+  userId        Int         @map("user_id")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunityId Int         @map("opportunity_id")
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  savedAt       DateTime    @default(now()) @map("saved_at")
+
+  @@unique([userId, opportunityId])
+  @@map("accounts_savedopportunity")
+}
+
+model IngestionLog {
+  id             Int          @id @default(autoincrement())
+  payload        Json
+  status         String
+  errors         Json?
+  opportunityId  Int?         @map("opportunity_id")
+  opportunity    Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("ingestion_ingestionlog")
+}

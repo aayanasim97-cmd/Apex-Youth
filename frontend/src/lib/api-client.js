@@ -1,10 +1,10 @@
 export async function apiFetch(path, options = {}) {
   const isServer = typeof window === "undefined";
   
-  // Server-side calls hit Django directly; Client-side calls hit the Next.js proxy
+  // Natively target full-stack Next.js API Routes directly
   const baseUrl = isServer 
-    ? (process.env.DJANGO_API_URL || "http://127.0.0.1:8000") 
-    : (process.env.NEXT_PUBLIC_API_URL || "");
+    ? (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000") 
+    : "";
     
   const url = `${baseUrl}${path}`;
   

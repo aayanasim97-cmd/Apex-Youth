@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
 
   const checkProfile = async () => {
     try {
-      const res = await apiFetch("/api/auth/profile/");
+      const res = await apiFetch("/api/auth/profile");
       if (res.ok) {
         const data = await res.json();
         setUser(data);
