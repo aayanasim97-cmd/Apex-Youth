@@ -1,0 +1,6 @@
+# Ignore Django backend files and environment setups from Vercel deployments
+backend/
+venv/
+requirements.txt
+docker-compose.prod.yml
+.env.production
